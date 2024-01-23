@@ -11,7 +11,7 @@ func TestNewProduct(t *testing.T) {
 	assert.NotNil(t, product)
 	assert.NotEmpty(t, product.ID)
 	assert.Equal(t, product.Name, "Testando")
-	assert.Equal(t, product.Price, 10)
+	assert.Equal(t, product.Price, 10.0)
 }
 
 func TestProductNameIsRequired(t *testing.T) {
