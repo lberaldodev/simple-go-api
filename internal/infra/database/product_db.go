@@ -48,6 +48,6 @@ func (p *Product) Update(product *entity.Product) error {
 	return p.DB.Save(product).Error
 }
 
-func (p *Product) Delete(id int) error {
+func (p *Product) Delete(id string) error {
 	return p.DB.Delete(&entity.Product{}, id).Error
 }
