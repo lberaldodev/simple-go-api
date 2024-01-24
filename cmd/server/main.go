@@ -34,5 +34,7 @@ func main() {
 
 	r.Post("/products", productHandler.Create)
 
+	r.Get("/product/{id}", productHandler.GetProduct)
+
 	http.ListenAndServe(":8080", r)
 }

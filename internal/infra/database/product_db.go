@@ -36,7 +36,7 @@ func (p *Product) FindAll(page, limit int, sort string) ([]entity.Product, error
 
 func (p *Product) FindById(id string) (*entity.Product, error) {
 	var product entity.Product
-	err := p.DB.First(&product, id).Error
+	err := p.DB.First(&product, "id = ?", id).Error
 	return &product, err
 }
 
@@ -49,5 +49,10 @@ func (p *Product) Update(product *entity.Product) error {
 }
 
 func (p *Product) Delete(id string) error {
-	return p.DB.Delete(&entity.Product{}, id).Error
+	product, err := p.FindById(id)
+	if err != nil {
+		return err
+	}
+
+	return p.DB.Delete(product).Error
 }
