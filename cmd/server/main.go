@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-chi/chi"
 	"go_api/configs"
 	"go_api/internal/entity"
 	"go_api/internal/infra/database"
@@ -29,7 +30,9 @@ func main() {
 
 	productHandler := handlers.NewProductHandler(productDb)
 
-	http.HandleFunc("/products", productHandler.Create)
+	r := chi.NewRouter()
 
-	http.ListenAndServe(":8080", nil)
+	r.Post("/products", productHandler.Create)
+
+	http.ListenAndServe(":8080", r)
 }
