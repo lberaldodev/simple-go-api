@@ -34,6 +34,8 @@ func main() {
 
 	r.Post("/products", productHandler.Create)
 
+	r.Get("/products", productHandler.ListProducts)
+
 	r.Get("/product/{id}", productHandler.GetProduct)
 
 	r.Put("/product/{id}", productHandler.UpdateProduct)

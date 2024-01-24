@@ -8,6 +8,7 @@ import (
 	"go_api/internal/infra/database"
 	idEntity "go_api/pkg/entity"
 	"net/http"
+	"strconv"
 )
 
 type ProductHandler struct {
@@ -69,6 +70,33 @@ func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(product)
+}
+
+func (h *ProductHandler) ListProducts(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+
+	if err != nil {
+		page = 0
+	}
+
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+
+	if err != nil {
+		limit = 0
+	}
+
+	sort := r.URL.Query().Get("sort")
+
+	products, err := h.ProductDB.FindAll(page, limit, sort)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(products)
 }
 
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
