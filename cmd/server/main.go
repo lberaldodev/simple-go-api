@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/go-chi/jwtauth"
 	"go_api/configs"
 	"go_api/internal/entity"
 	"go_api/internal/infra/database"
@@ -12,7 +13,7 @@ import (
 )
 
 func main() {
-	_, err := configs.LoadConfig(".")
+	configs, err := configs.LoadConfig(".")
 
 	if err != nil {
 		panic(err)
@@ -32,21 +33,28 @@ func main() {
 
 	productHandler := handlers.NewProductHandler(productDb)
 
-	userHandler := handlers.NewUserHandler(userDb)
+	userHandler := handlers.NewUserHandler(userDb, configs.TokenAuth, configs.JWTExpiresIn)
 
 	r := chi.NewRouter()
 
-	r.Post("/products", productHandler.Create)
+	r.Route("/products", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(configs.TokenAuth))
+		r.Use(jwtauth.Authenticator)
 
-	r.Get("/products", productHandler.ListProducts)
+		r.Post("/", productHandler.Create)
 
-	r.Get("/product/{id}", productHandler.GetProduct)
+		r.Get("/", productHandler.ListProducts)
 
-	r.Put("/product/{id}", productHandler.UpdateProduct)
+		r.Get("/{id}", productHandler.GetProduct)
 
-	r.Delete("/product/{id}", productHandler.DeleteProduct)
+		r.Put("/{id}", productHandler.UpdateProduct)
+
+		r.Delete("/{id}", productHandler.DeleteProduct)
+	})
 
 	r.Post("/users", userHandler.Create)
+
+	r.Post("/users/login", userHandler.Login)
 
 	http.ListenAndServe(":8080", r)
 }
